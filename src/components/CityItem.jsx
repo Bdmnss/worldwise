@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import Styles from "./CityItem.module.css";
+import { Link } from "react-router-dom";
 
 const formatDate = (date) =>
   new Intl.DateTimeFormat("en", {
@@ -9,14 +10,19 @@ const formatDate = (date) =>
   }).format(new Date(date));
 
 function CityItem({ city }) {
-  const { cityName, emoji, date } = city;
+  const { cityName, emoji, date, id, position } = city;
 
   return (
-    <li className={Styles.cityItem}>
-      <span className={Styles.emoji}>{emoji}</span>
-      <h3 className={Styles.name}>{cityName}</h3>
-      <time className={Styles.date}>{formatDate(date)}</time>
-      <button className={Styles.deleteBtn}>&times;</button>
+    <li>
+      <Link
+        to={`${id}?lat=${position.lat}&lng=${position.lng}`}
+        className={Styles.cityItem}
+      >
+        <span className={Styles.emoji}>{emoji}</span>
+        <h3 className={Styles.name}>{cityName}</h3>
+        <time className={Styles.date}>{formatDate(date)}</time>
+        <button className={Styles.deleteBtn}>&times;</button>
+      </Link>
     </li>
   );
 }
@@ -27,6 +33,7 @@ CityItem.propTypes = {
     emoji: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
+    position: PropTypes.string.isRequired,
   }).isRequired,
 };
 
