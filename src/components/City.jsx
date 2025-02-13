@@ -16,7 +16,7 @@ const formatDate = (date) =>
 function City() {
   const { id } = useParams();
 
-  const { getCity, currentCity, isLoading } = useCities();
+  const { getCity, currentCity, isLoading, error } = useCities();
 
   useEffect(
     function () {
@@ -26,9 +26,11 @@ function City() {
     [id]
   );
 
-  const { cityName, emoji, date, notes } = currentCity;
-
   if (isLoading) return <Spinner />;
+  if (error) return <p>{error}</p>;
+  if (!currentCity) return <p>City not found</p>;
+
+  const { cityName, emoji, date, notes } = currentCity || {};
 
   return (
     <div className={styles.city}>
