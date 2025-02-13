@@ -20,7 +20,7 @@ function CityItem({ city }) {
       <Link
         to={`${id}?lat=${position.lat}&lng=${position.lng}`}
         className={`${styles.cityItem} ${
-          id === currentCity.id ? styles["cityItem--active"] : ""
+          currentCity && id === currentCity.id ? styles["cityItem--active"] : ""
         }`}
       >
         <span className={styles.emoji}>{emoji}</span>
@@ -38,7 +38,10 @@ CityItem.propTypes = {
     emoji: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
-    position: PropTypes.string.isRequired,
+    position: PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lng: PropTypes.number.isRequired,
+    }).isRequired,
   }).isRequired,
 };
 

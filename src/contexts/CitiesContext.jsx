@@ -8,7 +8,8 @@ const CitiesContext = createContext();
 function CitiesProvider({ children }) {
   const [cities, setCities] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentCity, setCurrentCity] = useState({});
+  const [currentCity, setCurrentCity] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(function () {
     async function fetchCities() {
@@ -18,7 +19,7 @@ function CitiesProvider({ children }) {
         const data = await res.json();
         setCities(data);
       } catch {
-        alert("There was an error fetching cities");
+        console.log("There was an error fetching cities");
       } finally {
         setIsLoading(false);
       }
@@ -30,17 +31,44 @@ function CitiesProvider({ children }) {
     try {
       setIsLoading(true);
       const res = await fetch(`${BASE_URL}/cities/${id}`);
+      if (!res.ok) {
+        throw new Error("City not found");
+      }
       const data = await res.json();
       setCurrentCity(data);
+    } catch (error) {
+      console.log(error.message);
+      setError(error.message);
+      setCurrentCity(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function createCity(newCity) {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`${BASE_URL}/cities/`, {
+        method: "POST",
+        body: JSON.stringify(newCity),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+
+      setCities((cities) => [...cities, data]);
     } catch {
-      alert("There was an error fetching cities");
+      console.log("There was an error creating the city");
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <CitiesContext.Provider value={{ cities, isLoading, currentCity, getCity }}>
+    <CitiesContext.Provider
+      value={{ cities, isLoading, currentCity, error, getCity, createCity }}
+    >
       {children}
     </CitiesContext.Provider>
   );
